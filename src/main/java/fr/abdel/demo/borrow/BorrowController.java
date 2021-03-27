@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -28,18 +29,18 @@ public class BorrowController {
     UserRepository userRepository;
 
     @GetMapping(value = "/borrows")
-    public ResponseEntity getMyBorrows(){
+    public ResponseEntity getMyBorrows(Principal principal){
 
-        Integer userConnectedId = BookController.getUserConnectedId();
+        Integer userConnectedId = BookController.getUserConnectedId(principal);
         List<Borrow> borrows = borrowRepository.findByBorrowerId(userConnectedId);
 
         return new ResponseEntity(borrows, HttpStatus.OK);
     }
 
     @PostMapping(value = "/borrows/{bookId}")
-    public ResponseEntity createBorrow(@PathVariable("bookId") String bookId){
+    public ResponseEntity createBorrow(@PathVariable("bookId") String bookId, Principal principal){
 
-        Integer userConnectedId = BookController.getUserConnectedId();
+        Integer userConnectedId = BookController.getUserConnectedId(principal);
         Optional<User> borrower = userRepository.findById(Integer.valueOf(userConnectedId));
         Optional<Book> book = bookRepository.findById(Integer.valueOf(bookId));
 
